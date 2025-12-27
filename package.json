@@ -1,0 +1,36 @@
+{
+  "name": "waba-toolkit",
+  "version": "0.1.0",
+  "description": "Minimal, type-safe toolkit for WhatsApp Business API webhook processing and media handling",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "whatsapp",
+    "waba",
+    "whatsapp-business-api",
+    "webhook",
+    "meta"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0"
+  }
+}
