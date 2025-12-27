@@ -1,0 +1,49 @@
+{
+  "headers": {
+    "content-type": "application/json",
+    "x-hub-signature-256": "sha256=40bbc82964763fe6fd37cd55be0007a328edb9483b3ed71ec619f0979d55f2d9"
+  },
+  "body": {
+    "object": "whatsapp_business_account",
+    "entry": [
+      {
+        "id": "100000000000000",
+        "changes": [
+          {
+            "value": {
+              "messaging_product": "whatsapp",
+              "metadata": {
+                "display_phone_number": "15551234567",
+                "phone_number_id": "123456789012345"
+              },
+              "contacts": [
+                {
+                  "profile": {
+                    "name": "Test User"
+                  },
+                  "wa_id": "15559876543"
+                }
+              ],
+              "messages": [
+                {
+                  "from": "15559876543",
+                  "id": "wamid.HBgMOTE5OTk1NTU0NzEwFQIAEhggQUM2MDc0MTVGQTMwNUM5RUI4QTE0M0MzMkVCNjZDMUMA",
+                  "timestamp": "1766844549",
+                  "type": "audio",
+                  "audio": {
+                    "mime_type": "audio/ogg; codecs=opus",
+                    "sha256": "F5gNIRvWXDQhkkXJBLhhrqNg0SXWLakFnuNxhHd3/Vg=",
+                    "id": "2676326649427067",
+                    "url": "https://lookaside.fbsbx.com/whatsapp_business/attachments/?mid=2676326649427067&source=webhook&ext=1766844850&hash=ARlKYzVcPOuzKZb7RgwN2vxoz0R2jrO-uUmq0lSou0SR9A",
+                    "voice": false
+                  }
+                }
+              ]
+            },
+            "field": "messages"
+          }
+        ]
+      }
+    ]
+  }
+}

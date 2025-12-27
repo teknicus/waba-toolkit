@@ -1,0 +1,48 @@
+{
+  "headers": {
+    "content-type": "application/json",
+    "x-hub-signature-256": "sha256=776acb4c2d5ead2218e2100922b530037d82cc024c9d08f3f5a8393357407f82"
+  },
+  "body": {
+    "object": "whatsapp_business_account",
+    "entry": [
+      {
+        "id": "100000000000000",
+        "changes": [
+          {
+            "value": {
+              "messaging_product": "whatsapp",
+              "metadata": {
+                "display_phone_number": "15551234567",
+                "phone_number_id": "123456789012345"
+              },
+              "contacts": [
+                {
+                  "profile": {
+                    "name": "Test User"
+                  },
+                  "wa_id": "15559876543"
+                }
+              ],
+              "calls": [
+                {
+                  "id": "wacid.HBgPMTIwMzMyMjgzMjg5Njc3FRIAEhggQTFCNDdEMkE4RTVDRTM2OENCMkZBMjEyOTM3N0Q5NzMcGAw5MTk5NjIxNjYxNzMVAgAVGAA=",
+                  "from": "15559876543",
+                  "to": "15551234567",
+                  "event": "connect",
+                  "timestamp": "1766844861",
+                  "direction": "USER_INITIATED",
+                  "session": {
+                    "sdp": "v=0\r\no=- 1766844861963 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\na=group:BUNDLE audio\r\na=msid-semantic: WMS d1770a92-3aef-4d66-b6b4-a382d37b51e7\r\na=ice-lite\r\nm=audio 3484 UDP/TLS/RTP/SAVPF 111 126\r\nc=IN IP4 57.144.55.49\r\na=rtcp:9 IN IP4 0.0.0.0\r\na=candidate:684879287 1 udp 2122260223 57.144.55.49 3484 typ host generation 0 network-cost 50\r\na=candidate:3734479273 1 udp 2122262783 2a03:2880:f334:131:face:b00c:0:699c 3484 typ host generation 0 network-cost 50\r\na=ice-ufrag:/od+vJwctWUxVbbK\r\na=ice-pwd:OPzRCQ2T/pb4wN3w42gdaQ==\r\na=fingerprint:sha-256 5B:DA:78:40:33:06:E4:2F:8B:01:81:46:E2:2D:F1:3E:08:99:7E:8A:D9:CE:F9:26:8C:86:98:57:55:5C:ED:20\r\na=setup:actpass\r\na=mid:audio\r\na=sendrecv\r\na=msid:d1770a92-3aef-4d66-b6b4-a382d37b51e7 WhatsAppTrack1\r\na=rtcp-mux\r\na=rtpmap:111 opus/48000/2\r\na=rtcp-fb:111 transport-cc\r\na=fmtp:111 maxaveragebitrate=20000;maxplaybackrate=16000;minptime=20;sprop-maxcapturerate=16000;useinbandfec=1\r\na=rtpmap:126 telephone-event/8000\r\na=maxptime:20\r\na=ptime:20\r\na=ssrc:3640884882 cname:WhatsAppAudioStream1\r\n",
+                    "sdp_type": "offer"
+                  }
+                }
+              ]
+            },
+            "field": "calls"
+          }
+        ]
+      }
+    ]
+  }
+}

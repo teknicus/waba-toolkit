@@ -1,0 +1,48 @@
+{
+  "headers": {
+    "content-type": "application/json",
+    "x-hub-signature-256": "sha256=26eecffb96d9e450df3edb312351b2f26db08c0a34ac5f779e67297c83f66264"
+  },
+  "body": {
+    "object": "whatsapp_business_account",
+    "entry": [
+      {
+        "id": "100000000000000",
+        "changes": [
+          {
+            "value": {
+              "messaging_product": "whatsapp",
+              "metadata": {
+                "display_phone_number": "15551234567",
+                "phone_number_id": "123456789012345"
+              },
+              "contacts": [
+                {
+                  "profile": {
+                    "name": "Test User"
+                  },
+                  "wa_id": "15559876543"
+                }
+              ],
+              "calls": [
+                {
+                  "id": "wacid.HBgPMTIwMzMyMjgzMjg5Njc3FRIAEhggQTFCNDdEMkE4RTVDRTM2OENCMkZBMjEyOTM3N0Q5NzMcGAw5MTk5NjIxNjYxNzMVAgAVGAA=",
+                  "from": "15559876543",
+                  "to": "15551234567",
+                  "event": "terminate",
+                  "timestamp": "1766844895",
+                  "direction": "USER_INITIATED",
+                  "start_time": "1766844868",
+                  "end_time": "1766844895",
+                  "duration": 27,
+                  "status": "COMPLETED"
+                }
+              ]
+            },
+            "field": "calls"
+          }
+        ]
+      }
+    ]
+  }
+}

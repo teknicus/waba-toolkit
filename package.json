@@ -18,6 +18,8 @@
   "scripts": {
     "build": "tsup",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
@@ -31,6 +33,7 @@
   "devDependencies": {
     "@types/node": "^25.0.3",
     "tsup": "^8.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "vitest": "^4.0.16"
   }
 }

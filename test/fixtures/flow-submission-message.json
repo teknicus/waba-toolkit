@@ -1,0 +1,54 @@
+{
+  "headers": {
+    "content-type": "application/json",
+    "x-hub-signature-256": "sha256=4065ed70c6716a866848292d61a35a13d9582d22229f324682e2474c44130d2d"
+  },
+  "body": {
+    "object": "whatsapp_business_account",
+    "entry": [
+      {
+        "id": "100000000000000",
+        "changes": [
+          {
+            "value": {
+              "messaging_product": "whatsapp",
+              "metadata": {
+                "display_phone_number": "15551234567",
+                "phone_number_id": "123456789012345"
+              },
+              "contacts": [
+                {
+                  "profile": {
+                    "name": "Test User"
+                  },
+                  "wa_id": "15559876543"
+                }
+              ],
+              "messages": [
+                {
+                  "context": {
+                    "from": "15551234567",
+                    "id": "wamid.HBgMOTE5OTk1NTU0NzEwFQIAERgSQkZBNzQyNEQ0RDQ0NTIyQzZBAA=="
+                  },
+                  "from": "15559876543",
+                  "id": "wamid.HBgMOTE5OTk1NTU0NzEwFQIAEhgUM0FCQTg4MTI2NDMwNzg3REQyMDkA",
+                  "timestamp": "1766846482",
+                  "type": "interactive",
+                  "interactive": {
+                    "type": "nfm_reply",
+                    "nfm_reply": {
+                      "response_json": "{\"priorities\":[\"new_features\"],\"flow_token\":\"unique-session-token-123\",\"nps_score\":\"6\",\"experience\":\"regular\",\"survey_type\":\"ux_marketing_survey\",\"ease_of_use\":\"5\",\"completed_at\":\"{{timestamp}}\",\"role\":\"product\",\"features_needed\":[\"support\"],\"satisfaction\":\"5\",\"features_used\":[\"dashboard\"]}",
+                      "body": "Sent",
+                      "name": "flow"
+                    }
+                  }
+                }
+              ]
+            },
+            "field": "messages"
+          }
+        ]
+      }
+    ]
+  }
+}

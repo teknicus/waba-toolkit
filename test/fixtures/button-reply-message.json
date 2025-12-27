@@ -1,0 +1,53 @@
+{
+  "headers": {
+    "content-type": "application/json",
+    "x-hub-signature-256": "sha256=fd52d7a30a3d866ca9b8f750bcb66f222ecffd29b7f76735ce508ae3b1708e6e"
+  },
+  "body": {
+    "object": "whatsapp_business_account",
+    "entry": [
+      {
+        "id": "100000000000000",
+        "changes": [
+          {
+            "value": {
+              "messaging_product": "whatsapp",
+              "metadata": {
+                "display_phone_number": "15551234567",
+                "phone_number_id": "123456789012345"
+              },
+              "contacts": [
+                {
+                  "profile": {
+                    "name": "Test User"
+                  },
+                  "wa_id": "15559876543"
+                }
+              ],
+              "messages": [
+                {
+                  "context": {
+                    "from": "15551234567",
+                    "id": "wamid.HBgMOTE5OTk1NTU0NzEwFQIAERgSRjBCMkVDRTdCODBGMkU3NzM0AA=="
+                  },
+                  "from": "15559876543",
+                  "id": "wamid.HBgMOTE5OTk1NTU0NzEwFQIAEhgUM0I4RDAzMURBREJERUM2QUI2RkIA",
+                  "timestamp": "1766845429",
+                  "type": "interactive",
+                  "interactive": {
+                    "type": "button_reply",
+                    "button_reply": {
+                      "id": "<UNIQUE_BUTTON_ID_1>",
+                      "title": "<BUTTON_TITLE_1>"
+                    }
+                  }
+                }
+              ]
+            },
+            "field": "messages"
+          }
+        ]
+      }
+    ]
+  }
+}

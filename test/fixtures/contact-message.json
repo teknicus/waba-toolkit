@@ -1,0 +1,56 @@
+{
+  "headers": {
+    "content-type": "application/json",
+    "x-hub-signature-256": "sha256=d2bea652ad3f803f5e43283d98ea7db0629f59707ddc24f4d6b93e3acd42b770"
+  },
+  "body": {
+    "object": "whatsapp_business_account",
+    "entry": [
+      {
+        "id": "100000000000000",
+        "changes": [
+          {
+            "value": {
+              "messaging_product": "whatsapp",
+              "metadata": {
+                "display_phone_number": "15551234567",
+                "phone_number_id": "123456789012345"
+              },
+              "contacts": [
+                {
+                  "profile": {
+                    "name": "Test User"
+                  },
+                  "wa_id": "15559876543"
+                }
+              ],
+              "messages": [
+                {
+                  "from": "15559876543",
+                  "id": "wamid.HBgMOTE5OTk1NTU0NzEwFQIAEhggQUM2QzVGMEYyMkEyQzZFMjFEMUU4NjRCOUZFQkFCRDAA",
+                  "timestamp": "1766844483",
+                  "type": "contacts",
+                  "contacts": [
+                    {
+                      "name": {
+                        "formatted_name": "John Smith"
+                      },
+                      "phones": [
+                        {
+                          "phone": "+1 555 765 4321",
+                          "wa_id": "15557654321",
+                          "type": "MOBILE"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "field": "messages"
+          }
+        ]
+      }
+    ]
+  }
+}
