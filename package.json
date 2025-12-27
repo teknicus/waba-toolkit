@@ -1,6 +1,6 @@
 {
   "name": "waba-toolkit",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Minimal, type-safe toolkit for WhatsApp Business API webhook processing and media handling",
   "type": "module",
   "engines": {
@@ -37,5 +37,4 @@
     "vitest": "^4.0.16"
   },
   "repository": "github:teknicus/waba-toolkit"
-
 }
