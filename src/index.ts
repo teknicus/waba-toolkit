@@ -14,6 +14,8 @@ export {
   extractMediaId,
   getContactInfo,
   getMessageTimestamp,
+  getMessageId,
+  getCallId,
 } from './helpers.js';
 export type { ContactInfo } from './helpers.js';
 

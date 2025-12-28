@@ -4,9 +4,16 @@ import {
   extractMediaId,
   getContactInfo,
   getMessageTimestamp,
+  getMessageId,
+  getCallId,
 } from '../src/helpers.js';
 import { classifyWebhook } from '../src/webhooks/classify.js';
-import type { WebhookPayload, MessageWebhookValue } from '../src/types/webhooks.js';
+import type {
+  WebhookPayload,
+  MessageWebhookValue,
+  StatusWebhookValue,
+  CallWebhookValue,
+} from '../src/types/webhooks.js';
 import { loadFixture } from './fixtures.js';
 
 function getMessage(fixtureName: string) {
@@ -133,18 +140,18 @@ describe('getContactInfo', () => {
     expect(contactInfo!.waId).toBe('15559876543');
   });
 
-  it('returns undefined for status webhook', () => {
+  it('returns null for status webhook', () => {
     const fixture = loadFixture('sent-status');
     const contactInfo = getContactInfo(fixture.body as WebhookPayload);
 
     // Status webhooks don't have contacts array
-    expect(contactInfo).toBeUndefined();
+    expect(contactInfo).toBeNull();
   });
 
-  it('returns undefined for empty payload', () => {
+  it('returns null for empty payload', () => {
     const contactInfo = getContactInfo({} as WebhookPayload);
 
-    expect(contactInfo).toBeUndefined();
+    expect(contactInfo).toBeNull();
   });
 });
 
@@ -180,5 +187,100 @@ describe('getMessageTimestamp', () => {
 
     expect(imageTimestamp).toBeInstanceOf(Date);
     expect(documentTimestamp).toBeInstanceOf(Date);
+  });
+});
+
+describe('getMessageId', () => {
+  it('extracts id from text message webhook', () => {
+    const fixture = loadFixture('text-message');
+    const messageId = getMessageId(fixture.body as WebhookPayload);
+
+    expect(messageId).not.toBeNull();
+    expect(typeof messageId).toBe('string');
+    expect(messageId).toMatch(/^wamid\./);
+  });
+
+  it('extracts id from image message webhook', () => {
+    const fixture = loadFixture('image-message');
+    const messageId = getMessageId(fixture.body as WebhookPayload);
+
+    expect(messageId).not.toBeNull();
+    expect(typeof messageId).toBe('string');
+  });
+
+  it('extracts id from reaction message webhook', () => {
+    const fixture = loadFixture('reaction-message');
+    const messageId = getMessageId(fixture.body as WebhookPayload);
+
+    expect(messageId).not.toBeNull();
+    expect(typeof messageId).toBe('string');
+  });
+
+  it('extracts id from sent status webhook', () => {
+    const fixture = loadFixture('sent-status');
+    const messageId = getMessageId(fixture.body as WebhookPayload);
+
+    expect(messageId).not.toBeNull();
+    expect(typeof messageId).toBe('string');
+  });
+
+  it('extracts id from delivered status webhook', () => {
+    const fixture = loadFixture('delivered-status');
+    const messageId = getMessageId(fixture.body as WebhookPayload);
+
+    expect(messageId).not.toBeNull();
+    expect(typeof messageId).toBe('string');
+  });
+
+  it('returns null for call webhook', () => {
+    const fixture = loadFixture('incoming-call');
+    const messageId = getMessageId(fixture.body as WebhookPayload);
+
+    expect(messageId).toBeNull();
+  });
+
+  it('returns null for empty webhook', () => {
+    const messageId = getMessageId({} as WebhookPayload);
+
+    expect(messageId).toBeNull();
+  });
+});
+
+describe('getCallId', () => {
+  it('extracts id from incoming call webhook', () => {
+    const fixture = loadFixture('incoming-call');
+    const callId = getCallId(fixture.body as WebhookPayload);
+
+    expect(callId).not.toBeNull();
+    expect(typeof callId).toBe('string');
+    expect(callId).toMatch(/^wacid\./);
+  });
+
+  it('extracts id from completed call webhook', () => {
+    const fixture = loadFixture('completed-call');
+    const callId = getCallId(fixture.body as WebhookPayload);
+
+    expect(callId).not.toBeNull();
+    expect(typeof callId).toBe('string');
+  });
+
+  it('returns null for message webhook', () => {
+    const fixture = loadFixture('text-message');
+    const callId = getCallId(fixture.body as WebhookPayload);
+
+    expect(callId).toBeNull();
+  });
+
+  it('returns null for status webhook', () => {
+    const fixture = loadFixture('sent-status');
+    const callId = getCallId(fixture.body as WebhookPayload);
+
+    expect(callId).toBeNull();
+  });
+
+  it('returns null for empty webhook', () => {
+    const callId = getCallId({} as WebhookPayload);
+
+    expect(callId).toBeNull();
   });
 });

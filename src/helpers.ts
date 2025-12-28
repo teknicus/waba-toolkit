@@ -7,7 +7,12 @@ import type {
   DocumentMessage,
   StickerMessage,
 } from './types/messages.js';
-import type { WebhookPayload } from './types/webhooks.js';
+import type {
+  WebhookPayload,
+  MessageWebhookValue,
+  StatusWebhookValue,
+  CallWebhookValue,
+} from './types/webhooks.js';
 
 const MEDIA_TYPES = new Set(['image', 'audio', 'video', 'document', 'sticker']);
 
@@ -52,15 +57,15 @@ export interface ContactInfo {
 
 /**
  * Extracts sender info from webhook payload.
- * Returns undefined if the webhook doesn't contain message contact info.
+ * Returns null if the webhook doesn't contain message contact info.
  */
-export function getContactInfo(webhook: WebhookPayload): ContactInfo | undefined {
+export function getContactInfo(webhook: WebhookPayload): ContactInfo | null {
   const entry = webhook.entry?.[0];
   const change = entry?.changes?.[0];
   const value = change?.value;
 
   if (!value || !('contacts' in value) || !value.contacts?.length) {
-    return undefined;
+    return null;
   }
 
   const contact = value.contacts[0];
@@ -80,4 +85,54 @@ export function getContactInfo(webhook: WebhookPayload): ContactInfo | undefined
 export function getMessageTimestamp(message: IncomingMessage): Date {
   const epochSeconds = parseInt(message.timestamp, 10);
   return new Date(epochSeconds * 1000);
+}
+
+/**
+ * Extracts message ID from message or status webhook.
+ * Returns null if not a message/status webhook or ID not present.
+ */
+export function getMessageId(webhook: WebhookPayload): string | null {
+  const entry = webhook.entry?.[0];
+  const change = entry?.changes?.[0];
+  const value = change?.value;
+
+  if (!value) {
+    return null;
+  }
+
+  // Try message webhook
+  if ('messages' in value) {
+    const messageValue = value as MessageWebhookValue;
+    return messageValue.messages?.[0]?.id ?? null;
+  }
+
+  // Try status webhook
+  if ('statuses' in value) {
+    const statusValue = value as StatusWebhookValue;
+    return statusValue.statuses?.[0]?.id ?? null;
+  }
+
+  return null;
+}
+
+/**
+ * Extracts call ID from call webhook.
+ * Returns null if not a call webhook or ID not present.
+ */
+export function getCallId(webhook: WebhookPayload): string | null {
+  const entry = webhook.entry?.[0];
+  const change = entry?.changes?.[0];
+  const value = change?.value;
+
+  if (!value) {
+    return null;
+  }
+
+  // Check if it's a call webhook
+  if ('calls' in value) {
+    const callValue = value as CallWebhookValue;
+    return callValue.calls?.[0]?.id ?? null;
+  }
+
+  return null;
 }
