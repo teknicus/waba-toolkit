@@ -113,13 +113,15 @@ export interface StatusWebhookValue {
   statuses: StatusEntry[];
 }
 
+/** Call event types */
+export type CallEvent = 'connect' | 'terminate' | 'status';
 /** Call entry in call webhooks */
 export interface CallEntry {
   id: string;
   from: string;
   to: string;
   /** Present on connect webhooks */
-  event?: 'connect';
+  event?: CallEvent;
   direction: 'USER_INITIATED' | 'BUSINESS_INITIATED';
   timestamp: string;
   session?: {
@@ -133,6 +135,9 @@ export interface CallEntry {
   end_time?: string;
   /** Seconds, present on terminate if connected */
   duration?: number;
+  /** Arbitrary tracking string that allows you to attach custom metadata to calls */
+  biz_opaque_callback_data?: string;
+  
   errors?: {
     code: number;
     message: string;

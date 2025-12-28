@@ -1,6 +1,6 @@
 # waba-toolkit
 
-A minimal, type-safe toolkit for WhatsApp Business API webhook processing and media handling.
+Type-safe, zero-dependency WhatsApp Business API toolkit for webhooks, media downloads, and signature verification.
 
 > **Note:** This is not an official Meta/WhatsApp package, nor is it a full API wrapper. It is a utility toolkit derived from patterns across several production projects that interface directly with the WhatsApp Business API (Cloud API).
 
@@ -43,6 +43,8 @@ import {
   WABAClient,
   classifyWebhook,
   classifyMessage,
+  getContactInfo,
+  getMessageId,
   isMediaMessage,
   extractMediaId,
 } from 'waba-toolkit';
@@ -69,21 +71,35 @@ app.post('/webhook', async (req, res) => {
   const webhook = classifyWebhook(req.body);
 
   if (webhook.type === 'message') {
+    // 3. Extract contact info
+    const contact = getContactInfo(req.body);
+    if (contact) {
+      console.log('From:', contact.waId, contact.profileName);
+    }
+
+    // 4. Get message ID for marking as read
+    const messageId = getMessageId(req.body);
+
     const message = webhook.payload.messages?.[0];
     if (!message) return res.sendStatus(200);
 
-    // 3. Classify message type
+    // 5. Classify message type
     const classified = classifyMessage(message);
 
     if (classified.type === 'text') {
       console.log('Text:', classified.message.text.body);
     }
 
-    // 4. Handle media messages
+    // 6. Handle media messages
     if (isMediaMessage(message)) {
       const mediaId = extractMediaId(message);
       const { stream, mimeType } = await client.getMedia(mediaId);
       // Process stream...
+    }
+
+    // 7. Mark as read
+    if (messageId) {
+      await markAsRead(messageId);
     }
   }
 
@@ -226,33 +242,71 @@ switch (result.type) {
 
 ### Helper Functions
 
-| Function | Description |
-|----------|-------------|
-| `isMediaMessage(message)` | Type guard: returns `true` if message has downloadable media |
-| `extractMediaId(message)` | Extracts media ID from image/audio/video/document/sticker messages |
-| `getContactInfo(webhook)` | Extracts sender's `waId`, `profileName`, and `phoneNumberId` |
-| `getMessageTimestamp(message)` | Parses timestamp string to `Date` object |
+#### Webhook-level Helpers
+
+These helpers accept `WebhookPayload` and extract data from the top-level webhook structure:
+
+| Function | Description | Returns |
+|----------|-------------|---------|
+| `getContactInfo(webhook)` | Extracts sender's `waId`, `profileName`, and `phoneNumberId` | `ContactInfo \| null` |
+| `getMessageId(webhook)` | Extracts message ID from message or status webhooks | `string \| null` |
+| `getCallId(webhook)` | Extracts call ID from call webhooks | `string \| null` |
 
 ```typescript
-import {
-  isMediaMessage,
-  extractMediaId,
-  getContactInfo,
-  getMessageTimestamp,
-} from 'waba-toolkit';
+import { getContactInfo, getMessageId, getCallId } from 'waba-toolkit';
 
-// Check if message has media
-if (isMediaMessage(message)) {
-  const mediaId = extractMediaId(message);  // guaranteed non-undefined
-  const media = await client.getMedia(mediaId);
-}
-
-// Get sender info
+// Get sender info from message/call webhooks
 const contact = getContactInfo(webhookPayload);
 if (contact) {
   console.log(contact.waId);          // e.g., '14155551234'
   console.log(contact.profileName);   // e.g., 'John Doe' (may be undefined)
   console.log(contact.phoneNumberId); // Your business phone number ID
+}
+
+// Get message ID from message webhooks
+const messageId = getMessageId(webhookPayload);
+if (messageId) {
+  await markAsRead(messageId);
+}
+
+// Get message ID from status webhooks
+const statusMessageId = getMessageId(statusWebhook);
+if (statusMessageId) {
+  console.log('Status update for message:', statusMessageId);
+}
+
+// Get call ID from call webhooks
+const callId = getCallId(webhookPayload);
+if (callId) {
+  await logCall(callId);
+}
+```
+
+#### Message-level Helpers
+
+These helpers operate on individual message objects:
+
+| Function | Description | Returns |
+|----------|-------------|---------|
+| `isMediaMessage(message)` | Type guard: returns `true` if message has downloadable media | `boolean` |
+| `extractMediaId(message)` | Extracts media ID from image/audio/video/document/sticker messages | `string \| undefined` |
+| `getMessageTimestamp(message)` | Parses timestamp string to `Date` object | `Date` |
+
+```typescript
+import {
+  isMediaMessage,
+  extractMediaId,
+  getMessageTimestamp,
+} from 'waba-toolkit';
+
+// Extract message from webhook first
+const message = webhookPayload.entry[0].changes[0].value.messages?.[0];
+if (!message) return;
+
+// Check if message has media
+if (isMediaMessage(message)) {
+  const mediaId = extractMediaId(message);  // guaranteed non-undefined
+  const media = await client.getMedia(mediaId);
 }
 
 // Parse timestamp
