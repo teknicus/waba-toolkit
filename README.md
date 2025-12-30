@@ -1,8 +1,19 @@
 # waba-toolkit
 
-Type-safe, zero-dependency WhatsApp Business API toolkit for webhooks, media downloads, and signature verification.
+Type-safe WhatsApp Business API toolkit with CLI for webhooks, media downloads, signature verification, and message sending.
 
 > **Note:** This is not an official Meta/WhatsApp package, nor is it a full API wrapper. It is a utility toolkit derived from patterns across several production projects that interface directly with the WhatsApp Business API (Cloud API).
+
+## Features
+
+- **CLI Tool** - Send messages, manage phone numbers, and configure settings from the command line
+- **Type-Safe** - Full TypeScript support with discriminated unions for webhook and message types
+- **Media Downloads** - Stream or buffer media with automatic URL refresh handling
+- **Webhook Processing** - Classify and verify webhooks with HMAC-SHA256 signature verification
+- **Message Sending** - Send text, template, and custom messages programmatically
+- **Phone Management** - Register, deregister, and list phone numbers
+- **Zero Dependencies** - Core library has no runtime dependencies (CLI uses Commander + Inquirer)
+- **Dual Format** - ESM and CommonJS support
 
 ---
 
@@ -11,8 +22,15 @@ Type-safe, zero-dependency WhatsApp Business API toolkit for webhooks, media dow
 - [Installation](#installation)
 - [Requirements](#requirements)
 - [Quick Start](#quick-start)
+  - [CLI Usage](#cli-usage)
+  - [Library Usage](#library-usage)
+- [CLI Reference](#cli-reference)
+  - [Configuration](#configuration)
+  - [Phone Management](#phone-management)
+  - [Sending Messages](#sending-messages)
 - [API Reference](#api-reference)
   - [WABAClient](#wabaclient)
+  - [WABAApiClient](#wabaapiclient)
   - [Webhook Functions](#webhook-functions)
   - [Helper Functions](#helper-functions)
   - [Error Classes](#error-classes)
@@ -38,9 +56,31 @@ npm install waba-toolkit
 
 ## Quick Start
 
+### CLI Usage
+
+```bash
+# Configure once (interactive)
+waba-toolkit configure
+
+# List phone numbers
+waba-toolkit list-phones --waba-id YOUR_WABA_ID
+
+# Send a text message
+waba-toolkit send text --to 1234567890 --message "Hello World"
+
+# Register a phone number
+waba-toolkit register --pin 123456
+
+# View all commands
+waba-toolkit --help
+```
+
+### Library Usage
+
 ```typescript
 import {
   WABAClient,
+  WABAApiClient,
   classifyWebhook,
   classifyMessage,
   getContactInfo,
@@ -109,6 +149,211 @@ app.post('/webhook', async (req, res) => {
 
 ---
 
+## CLI Reference
+
+The CLI provides a convenient way to interact with the WhatsApp Business API without writing code.
+
+### Configuration
+
+Config is stored at `~/.waba-toolkit` (encrypted, machine-locked).
+
+**Priority:** CLI flags > environment variables > config file
+
+#### Interactive Setup
+
+```bash
+waba-toolkit configure
+```
+
+Prompts for:
+- Access token (required)
+- Default phone number ID (optional)
+- API version (optional, default: v22.0)
+- WABA ID (optional)
+- Business ID (optional)
+
+#### View Configuration
+
+```bash
+waba-toolkit config show
+```
+
+Shows current configuration with sensitive values masked (e.g., `EAA...****...abc`).
+
+#### Update Configuration
+
+```bash
+# Set default phone number ID
+waba-toolkit config set-default-phone 1234567890
+
+# Update specific fields
+waba-toolkit config set access-token EAABsbCS...
+waba-toolkit config set waba-id 1234567890
+waba-toolkit config set api-version v22.0
+```
+
+Valid fields: `access-token`, `default-phone-number-id`, `api-version`, `waba-id`, `business-id`
+
+#### Environment Variables
+
+```bash
+export WABA_TOOLKIT_ACCESS_TOKEN="your-token"
+export WABA_TOOLKIT_PHONE_NUMBER_ID="your-phone-number-id"
+export WABA_TOOLKIT_WABA_ID="your-waba-id"
+export WABA_TOOLKIT_API_VERSION="v22.0"
+```
+
+### Phone Management
+
+#### List Phone Numbers
+
+```bash
+# List all phone numbers for a WABA
+waba-toolkit list-phones --waba-id 1234567890
+
+# Using environment variable
+WABA_TOOLKIT_WABA_ID=1234567890 waba-toolkit list-phones
+```
+
+Returns JSON with phone numbers, quality ratings, and verified names:
+
+```json
+{
+  "data": [
+    {
+      "verified_name": "Your Business",
+      "display_phone_number": "+1 555-0100",
+      "id": "1234567890",
+      "quality_rating": "GREEN"
+    }
+  ]
+}
+```
+
+#### Register Phone Number
+
+```bash
+# Register with default phone number ID from config
+waba-toolkit register --pin 123456
+
+# Register specific phone number
+waba-toolkit register --bpid 1234567890 --pin 123456
+```
+
+#### Deregister Phone Number
+
+```bash
+# Deregister default phone number
+waba-toolkit deregister
+
+# Deregister specific phone number
+waba-toolkit deregister --bpid 1234567890
+```
+
+### Sending Messages
+
+#### Text Message
+
+```bash
+# Basic text message
+waba-toolkit send text --to 1234567890 --message "Hello World"
+
+# With URL preview
+waba-toolkit send text --to 1234567890 --message "Check out https://example.com" --preview-url
+
+# Reply to message
+waba-toolkit send text --to 1234567890 --message "Got it!" --reply-to wamid.abc123
+```
+
+#### Template Message
+
+```bash
+waba-toolkit send template --to 1234567890 --file template.json
+```
+
+Template JSON format:
+
+```json
+{
+  "name": "hello_world",
+  "language": {
+    "code": "en_US"
+  },
+  "components": [
+    {
+      "type": "body",
+      "parameters": [
+        { "type": "text", "text": "John" }
+      ]
+    }
+  ]
+}
+```
+
+#### Custom Message (from JSON)
+
+```bash
+waba-toolkit send file --payload message.json
+```
+
+Example payloads:
+
+**Text:**
+```json
+{
+  "messaging_product": "whatsapp",
+  "to": "1234567890",
+  "type": "text",
+  "text": {
+    "body": "Hello World"
+  }
+}
+```
+
+**Image:**
+```json
+{
+  "messaging_product": "whatsapp",
+  "to": "1234567890",
+  "type": "image",
+  "image": {
+    "link": "https://example.com/image.jpg"
+  }
+}
+```
+
+**Interactive (List):**
+```json
+{
+  "messaging_product": "whatsapp",
+  "to": "1234567890",
+  "type": "interactive",
+  "interactive": {
+    "type": "list",
+    "body": {
+      "text": "Choose an option"
+    },
+    "action": {
+      "button": "View Menu",
+      "sections": [
+        {
+          "title": "Options",
+          "rows": [
+            {
+              "id": "1",
+              "title": "Option 1",
+              "description": "First option"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+```
+
+---
+
 ## API Reference
 
 ### WABAClient
@@ -147,6 +392,89 @@ const { stream, mimeType, sha256, fileSize, url } = await client.getMedia(mediaI
 // Buffer
 const { buffer, mimeType, sha256, fileSize, url } = await client.getMedia(mediaId, {
   asBuffer: true,
+});
+```
+
+---
+
+### WABAApiClient
+
+Client for outbound WhatsApp Business API operations (sending messages, phone registration).
+
+#### Constructor
+
+```typescript
+const apiClient = new WABAApiClient({
+  accessToken: string,      // Required: Meta access token
+  phoneNumberId: string,    // Required: Your business phone number ID
+  apiVersion?: string,      // Optional: API version (default: 'v22.0')
+  baseUrl?: string,         // Optional: Base URL (default: 'https://graph.facebook.com')
+});
+```
+
+#### Methods
+
+| Method | Description |
+|--------|-------------|
+| `registerPhone(pin)` | Register phone number with 6-digit PIN |
+| `deregisterPhone()` | Deregister phone number |
+| `listPhoneNumbers(wabaId)` | List all phone numbers for a WABA |
+| `sendTextMessage(to, text, options)` | Send text message |
+| `sendTemplateMessage(to, template)` | Send approved template message |
+| `sendMessage(payload)` | Send any message type with custom payload |
+
+#### Examples
+
+```typescript
+import { WABAApiClient } from 'waba-toolkit';
+
+const apiClient = new WABAApiClient({
+  accessToken: process.env.META_ACCESS_TOKEN,
+  phoneNumberId: '1234567890',
+});
+
+// List phone numbers
+const phones = await apiClient.listPhoneNumbers('YOUR_WABA_ID');
+console.log(phones.data);
+
+// Register phone
+await apiClient.registerPhone('123456');
+
+// Send text message
+const response = await apiClient.sendTextMessage(
+  '1234567890',
+  'Hello from waba-toolkit!',
+  { previewUrl: true }
+);
+console.log('Message ID:', response.messages[0].id);
+
+// Reply to a message
+await apiClient.sendTextMessage(
+  '1234567890',
+  'This is a reply',
+  { context: { message_id: 'wamid.abc123' } }
+);
+
+// Send template message
+await apiClient.sendTemplateMessage('1234567890', {
+  name: 'hello_world',
+  language: { code: 'en_US' },
+  components: [
+    {
+      type: 'body',
+      parameters: [{ type: 'text', text: 'John' }],
+    },
+  ],
+});
+
+// Send custom message (image)
+await apiClient.sendMessage({
+  messaging_product: 'whatsapp',
+  to: '1234567890',
+  type: 'image',
+  image: {
+    link: 'https://example.com/image.jpg',
+  },
 });
 ```
 
@@ -324,10 +652,19 @@ console.log(sentAt.toISOString());
 | `WABAMediaError` | Media download failures (includes `mediaId` and `code`) |
 | `WABANetworkError` | Network/connection failures (includes `cause`) |
 | `WABASignatureError` | Invalid webhook signature |
+| `WABAConfigError` | Configuration issues (includes `field`) |
+| `WABAAuthError` | Authentication failures (includes `statusCode`) |
+| `WABASendError` | Message sending failures (includes `statusCode` and `errorPayload`) |
 
 ```typescript
-import { WABAMediaError, WABANetworkError } from 'waba-toolkit';
+import {
+  WABAMediaError,
+  WABANetworkError,
+  WABASendError,
+  WABAAuthError,
+} from 'waba-toolkit';
 
+// Media download errors
 try {
   const media = await client.getMedia(mediaId);
 } catch (error) {
@@ -335,6 +672,18 @@ try {
     console.error(`Media error for ${error.mediaId}: ${error.code}`);
   } else if (error instanceof WABANetworkError) {
     console.error('Network error:', error.cause);
+  }
+}
+
+// Message sending errors
+try {
+  await apiClient.sendTextMessage('1234567890', 'Hello');
+} catch (error) {
+  if (error instanceof WABAAuthError) {
+    console.error(`Auth failed: ${error.statusCode}`);
+  } else if (error instanceof WABASendError) {
+    console.error(`Send failed: ${error.statusCode}`);
+    console.error('Details:', error.errorPayload);
   }
 }
 ```
@@ -347,8 +696,9 @@ All types are exported for use in your application:
 
 ```typescript
 import type {
-  // Client
+  // Clients
   WABAClientOptions,
+  WABAApiClientOptions,
   GetMediaOptions,
 
   // Media
@@ -356,7 +706,19 @@ import type {
   MediaStreamResult,
   MediaBufferResult,
 
-  // Webhooks
+  // API (Outbound)
+  SendTextMessageRequest,
+  SendTemplateMessageRequest,
+  SendMessageResponse,
+  MessagePayload,
+  RegisterPhoneRequest,
+  DeregisterPhoneRequest,
+  TemplateParameter,
+  TemplateComponent,
+  PhoneNumber,
+  ListPhoneNumbersResponse,
+
+  // Webhooks (Inbound)
   WebhookPayload,
   WebhookClassification,
   MessageWebhookValue,

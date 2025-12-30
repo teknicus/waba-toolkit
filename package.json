@@ -1,10 +1,13 @@
 {
   "name": "waba-toolkit",
   "version": "0.2.0",
-  "description": "Type-safe, zero-dependency WhatsApp Business API toolkit for webhooks, media downloads, and signature verification",
+  "description": "Type-safe WhatsApp Business API toolkit with CLI for webhooks, media downloads, signature verification, and message sending",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "bin": {
+    "waba-toolkit": "./dist/index.cli.js"
+  },
   "engines": {
     "node": ">=20.0.0"
   },
@@ -41,7 +44,12 @@
     "url": "https://github.com/teknicus/waba-toolkit/issues"
   },
   "license": "MIT",
+  "dependencies": {
+    "commander": "^12.0.0",
+    "inquirer": "^9.0.0"
+  },
   "devDependencies": {
+    "@types/inquirer": "^9.0.9",
     "@types/node": "^25.0.3",
     "tsup": "^8.0.0",
     "typescript": "^5.0.0",

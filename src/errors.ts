@@ -44,3 +44,34 @@ export class WABASignatureError extends WABAError {
     Object.setPrototypeOf(this, new.target.prototype);
   }
 }
+
+/** Error for configuration issues (missing values, invalid config) */
+export class WABAConfigError extends WABAError {
+  constructor(message: string, public readonly field?: string) {
+    super(message);
+    this.name = 'WABAConfigError';
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
+}
+
+/** Error for authentication failures */
+export class WABAAuthError extends WABAError {
+  constructor(message: string, public readonly statusCode: number) {
+    super(message, statusCode);
+    this.name = 'WABAAuthError';
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
+}
+
+/** Error for message sending failures */
+export class WABASendError extends WABAError {
+  constructor(
+    message: string,
+    public readonly statusCode: number,
+    public readonly errorPayload: unknown
+  ) {
+    super(message, statusCode, errorPayload);
+    this.name = 'WABASendError';
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
+}

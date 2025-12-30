@@ -1,6 +1,23 @@
 // Main client
 export { WABAClient } from './client.js';
 
+// API client for outbound messaging
+export { WABAApiClient } from './api/index.js';
+export type {
+  WABAApiClientOptions,
+  SendTextMessageRequest,
+  SendTemplateMessageRequest,
+  SendMessageResponse,
+  SuccessResponse,
+  MessagePayload,
+  RegisterPhoneRequest,
+  DeregisterPhoneRequest,
+  TemplateParameter,
+  TemplateComponent,
+  PhoneNumber,
+  ListPhoneNumbersResponse,
+} from './api/index.js';
+
 // Webhook classification
 export { classifyWebhook, classifyMessage } from './webhooks/index.js';
 
@@ -25,6 +42,9 @@ export {
   WABAMediaError,
   WABANetworkError,
   WABASignatureError,
+  WABAConfigError,
+  WABAAuthError,
+  WABASendError,
 } from './errors.js';
 
 // Types
