@@ -19,7 +19,9 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "docs",
+    "ARCHITECTURE.md"
   ],
   "scripts": {
     "build": "tsup",
