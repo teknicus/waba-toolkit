@@ -2,7 +2,7 @@
 
 Type-safe WhatsApp Business API toolkit with CLI for Node.js 20+
 
-**TL;DR:** Process webhooks, download media, send messages. Zero dependencies. Fully typed. Works as library or CLI.
+**TL;DR:** Process webhooks, download media, send messages. Zero library dependencies. Fully typed. Works as library or CLI.
 
 ---
 
@@ -12,8 +12,9 @@ Type-safe WhatsApp Business API toolkit with CLI for Node.js 20+
 - **Download Media** → Images, videos, documents with automatic URL refresh
 - **Send Messages** → Text, templates, media via library or CLI
 - **Manage Phones** → Register/deregister business phone numbers
+- **Manage Flows** → Create and update WhatsApp Flows via CLI
 
-Zero runtime dependencies. ESM + CommonJS. Full TypeScript support.
+Zero library dependencies (CLI uses commander + inquirer). ESM + CommonJS. Full TypeScript support.
 
 ---
 
@@ -108,6 +109,27 @@ waba-toolkit register --pin 123456
 
 # List phone numbers
 waba-toolkit list-phones --waba-id YOUR_WABA_ID
+
+# List all flows
+waba-toolkit list-flows --waba-id YOUR_WABA_ID
+
+# Create a WhatsApp Flow
+waba-toolkit create flow --name "My Flow" --categories LEAD_GENERATION
+
+# Upload Flow JSON
+waba-toolkit update flow --flow-id 123456789 --file ./my-flow.json
+
+# Publish flow (irreversible)
+waba-toolkit publish flow --flow-id 123456789
+
+# List message templates
+waba-toolkit list-templates --waba-id YOUR_WABA_ID
+
+# Create a message template
+waba-toolkit create template --name my_template --file ./template.json
+
+# Delete a template
+waba-toolkit delete template --name old_template
 ```
 
 → **Learn more:** [CLI Guide](docs/CLI.md)
@@ -127,6 +149,13 @@ waba-toolkit list-phones --waba-id YOUR_WABA_ID
 | Send custom message payloads | ✅ | ✅ |
 | Register/deregister phones | ✅ | ✅ |
 | List phone numbers | ✅ | ✅ |
+| List WhatsApp Flows | ✅ | ✅ |
+| Create WhatsApp Flows | ✅ | ✅ |
+| Update Flow JSON | ✅ | ✅ |
+| Publish Flows | ✅ | ✅ |
+| List message templates | ✅ | ✅ |
+| Create message templates | ✅ | ✅ |
+| Delete message templates | ✅ | ✅ |
 | Encrypted config storage | - | ✅ |
 
 ---
@@ -328,6 +357,19 @@ await apiClient.sendTemplateMessage('1234567890', {
 waba-toolkit send template --to 1234567890 --file template.json
 ```
 
+### CLI: Create, Update & Publish Flow
+
+```bash
+# Create flow
+waba-toolkit create flow --name "Lead Form" --categories LEAD_GENERATION
+
+# Upload Flow JSON (returns validation errors if invalid)
+waba-toolkit update flow --flow-id 123456789 --file ./lead-form.json
+
+# Publish flow (irreversible - makes flow available for use)
+waba-toolkit publish flow --flow-id 123456789
+```
+
 ---
 
 ## TypeScript Support
@@ -357,16 +399,29 @@ import type {
   SendMessageResponse,
   TemplateComponent,
   PhoneNumber,
+
+  // Flows
+  FlowCategory,
+  FlowStatus,
+  FlowListItem,
+  ListFlowsResponse,
+  CreateFlowResponse,
+  UpdateFlowJsonResponse,
+  FlowValidationError,
+  PublishFlowResponse,
+
+  // Templates
+  TemplateCategory,
+  TemplateStatus,
+  TemplateListItem,
+  ListTemplatesResponse,
+  CreateTemplateRequest,
+  CreateTemplateResponse,
+  DeleteTemplateResponse,
 } from 'waba-toolkit';
 ```
 
 See [API_REFERENCE.md](API_REFERENCE.md) for complete type documentation.
-
----
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
 
 ---
 
@@ -379,6 +434,6 @@ MIT
 ## Links
 
 - **npm:** https://www.npmjs.com/package/waba-toolkit
-- **GitHub:** https://github.com/your-username/waba-toolkit
-- **Issues:** https://github.com/your-username/waba-toolkit/issues
+- **GitHub:** https://github.com/teknicus/waba-toolkit
+- **Issues:** https://github.com/teknicus/waba-toolkit/issues
 - **WhatsApp Business API Docs:** https://developers.facebook.com/docs/whatsapp/cloud-api

@@ -12,6 +12,13 @@ import {
   sendTemplate,
   sendFile,
   listPhones,
+  listFlows,
+  createFlow,
+  updateFlow,
+  publishFlow,
+  listTemplates,
+  createTemplate,
+  deleteTemplate,
 } from './commands/index.js';
 
 // Get package.json version
@@ -34,6 +41,13 @@ Examples:
   $ waba-toolkit list-phones --waba-id 123    # List phone numbers
   $ waba-toolkit send text --to 1234567890 --message "Hello"
   $ waba-toolkit register --pin 123456
+  $ waba-toolkit list-flows --waba-id 123     # List all flows
+  $ waba-toolkit create flow --name "My Flow" # Create a new WhatsApp Flow
+  $ waba-toolkit update flow --flow-id 123 --file flow.json  # Upload Flow JSON
+  $ waba-toolkit publish flow --flow-id 123   # Publish flow (irreversible)
+  $ waba-toolkit list-templates --waba-id 123 # List all templates
+  $ waba-toolkit create template --name my_tpl --file template.json
+  $ waba-toolkit delete template --name old_tpl
 
 Environment Variables:
   WABA_TOOLKIT_ACCESS_TOKEN       Access token for WhatsApp API
@@ -93,14 +107,16 @@ configCommand
 Examples:
   $ waba-toolkit config set access-token EAABsbCS...
   $ waba-toolkit config set waba-id 1234567890
+  $ waba-toolkit config set default-phone-number-id 9876543210
   $ waba-toolkit config set api-version v22.0
+  $ waba-toolkit config set business-id 1122334455
 
 Valid fields:
-  - access-token
-  - default-phone-number-id
-  - api-version
-  - waba-id
-  - business-id
+  access-token              Your Meta access token (required for API calls)
+  default-phone-number-id   Default phone number ID for sending messages
+  waba-id                   WhatsApp Business Account ID (for flows/templates)
+  api-version               Graph API version (default: v22.0)
+  business-id               Meta Business Portfolio ID
 `)
   .action(setConfigField);
 
@@ -263,6 +279,185 @@ Payload JSON format (image message):
       bpid: options.bpid,
       phoneNumberId: options.phoneNumberId,
       payload: options.payload,
+    });
+  });
+
+// List flows command
+program
+  .command('list-flows')
+  .description('List all WhatsApp Flows for a WABA')
+  .option('--waba-id <id>', 'WhatsApp Business Account ID (overrides default)')
+  .addHelpText('after', `
+Examples:
+  $ waba-toolkit list-flows --waba-id 1234567890
+  $ WABA_TOOLKIT_WABA_ID=1234567890 waba-toolkit list-flows
+
+Output:
+  Returns JSON with flow details including name, status, categories, and validation errors.
+`)
+  .action(async (options) => {
+    await listFlows({
+      wabaId: options.wabaId,
+    });
+  });
+
+// Create commands
+const createCommand = program
+  .command('create')
+  .description('Create WhatsApp Business API resources');
+
+createCommand
+  .command('flow')
+  .description('Create a new WhatsApp Flow')
+  .requiredOption('--name <name>', 'Name of the flow')
+  .option('--categories <categories>', 'Comma-separated list of categories (default: OTHER)')
+  .option('--endpoint-uri <uri>', 'Endpoint URI for the flow')
+  .option('--clone-flow-id <id>', 'Clone from existing flow ID')
+  .option('--waba-id <id>', 'WhatsApp Business Account ID (overrides default)')
+  .addHelpText('after', `
+Examples:
+  $ waba-toolkit create flow --name "My Flow"
+  $ waba-toolkit create flow --name "Lead Gen Flow" --categories LEAD_GENERATION
+  $ waba-toolkit create flow --name "Multi-Category" --categories LEAD_GENERATION,SURVEY
+  $ waba-toolkit create flow --name "Clone" --clone-flow-id 123456789
+
+Categories:
+  SIGN_UP, SIGN_IN, APPOINTMENT_BOOKING, LEAD_GENERATION,
+  CONTACT_US, CUSTOMER_SUPPORT, SURVEY, OTHER
+`)
+  .action(async (options) => {
+    await createFlow({
+      name: options.name,
+      categories: options.categories,
+      endpointUri: options.endpointUri,
+      cloneFlowId: options.cloneFlowId,
+      wabaId: options.wabaId,
+    });
+  });
+
+// Update commands
+const updateCommand = program
+  .command('update')
+  .description('Update WhatsApp Business API resources');
+
+updateCommand
+  .command('flow')
+  .description('Upload or update Flow JSON for an existing flow')
+  .requiredOption('--flow-id <id>', 'Flow ID to update')
+  .requiredOption('--file <path>', 'Path to the Flow JSON file')
+  .addHelpText('after', `
+Examples:
+  $ waba-toolkit update flow --flow-id 123456789 --file ./my-flow.json
+
+Output:
+  Returns JSON with success status and any validation errors from the Flow JSON.
+  Validation errors include line/column numbers to help locate issues.
+`)
+  .action(async (options) => {
+    await updateFlow({
+      flowId: options.flowId,
+      file: options.file,
+    });
+  });
+
+// Publish commands
+const publishCommand = program
+  .command('publish')
+  .description('Publish WhatsApp Business API resources');
+
+publishCommand
+  .command('flow')
+  .description('Publish a flow (irreversible)')
+  .requiredOption('--flow-id <id>', 'Flow ID to publish')
+  .addHelpText('after', `
+Examples:
+  $ waba-toolkit publish flow --flow-id 123456789
+
+WARNING: Publishing a flow is IRREVERSIBLE.
+Once published, the flow and its assets become immutable.
+To update a published flow, create a new flow with --clone-flow-id.
+`)
+  .action(async (options) => {
+    await publishFlow({
+      flowId: options.flowId,
+    });
+  });
+
+// List templates command
+program
+  .command('list-templates')
+  .description('List all message templates for a WABA')
+  .option('--waba-id <id>', 'WhatsApp Business Account ID (overrides default)')
+  .addHelpText('after', `
+Examples:
+  $ waba-toolkit list-templates --waba-id 1234567890
+  $ WABA_TOOLKIT_WABA_ID=1234567890 waba-toolkit list-templates
+
+Output:
+  Returns JSON with template details including name, status, category, and components.
+`)
+  .action(async (options) => {
+    await listTemplates({
+      wabaId: options.wabaId,
+    });
+  });
+
+// Add template commands to create
+createCommand
+  .command('template')
+  .description('Create a new message template')
+  .requiredOption('--name <name>', 'Template name (lowercase, underscores, no spaces)')
+  .requiredOption('--file <path>', 'Path to template JSON file')
+  .option('--waba-id <id>', 'WhatsApp Business Account ID (overrides default)')
+  .addHelpText('after', `
+Examples:
+  $ waba-toolkit create template --name my_template --file ./template.json
+  $ waba-toolkit create template --name order_update --file ./order-template.json --waba-id 123
+
+Template JSON format:
+  {
+    "language": "en_US",
+    "category": "MARKETING",
+    "components": [
+      {
+        "type": "BODY",
+        "text": "Hello {{1}}, your order {{2}} is ready!"
+      }
+    ]
+  }
+
+Categories:
+  AUTHENTICATION, MARKETING, UTILITY
+`)
+  .action(async (options) => {
+    await createTemplate({
+      name: options.name,
+      file: options.file,
+      wabaId: options.wabaId,
+    });
+  });
+
+// Delete commands
+const deleteCommand = program
+  .command('delete')
+  .description('Delete WhatsApp Business API resources');
+
+deleteCommand
+  .command('template')
+  .description('Delete a message template by name')
+  .requiredOption('--name <name>', 'Template name to delete')
+  .option('--waba-id <id>', 'WhatsApp Business Account ID (overrides default)')
+  .addHelpText('after', `
+Examples:
+  $ waba-toolkit delete template --name my_template
+  $ waba-toolkit delete template --name old_promo --waba-id 1234567890
+
+Note: Deleting a template removes all language versions of that template.
+`)
+  .action(async (options) => {
+    await deleteTemplate({
+      name: options.name,
+      wabaId: options.wabaId,
     });
   });
 

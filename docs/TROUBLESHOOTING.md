@@ -557,7 +557,7 @@ npm list waba-toolkit
 
 ### Resources
 
-- **GitHub Issues:** https://github.com/your-username/waba-toolkit/issues
+- **GitHub Issues:** https://github.com/teknicus/waba-toolkit/issues
 - **Meta API Docs:** https://developers.facebook.com/docs/whatsapp
 - **Meta Support:** https://business.facebook.com/business/help
 - **Meta API Status:** https://developers.facebook.com/status/
@@ -619,4 +619,4 @@ diagnostic();
 
 - [CLI Guide](CLI.md) - CLI usage
 - [API Reference](../API_REFERENCE.md) - Complete API documentation
-- [GitHub Issues](https://github.com/your-username/waba-toolkit/issues) - Report bugs
+- [GitHub Issues](https://github.com/teknicus/waba-toolkit/issues) - Report bugs

@@ -101,3 +101,138 @@ export interface PhoneNumber {
 export interface ListPhoneNumbersResponse {
   data: PhoneNumber[];
 }
+
+// Flow types
+export type FlowCategory =
+  | 'SIGN_UP'
+  | 'SIGN_IN'
+  | 'APPOINTMENT_BOOKING'
+  | 'LEAD_GENERATION'
+  | 'CONTACT_US'
+  | 'CUSTOMER_SUPPORT'
+  | 'SURVEY'
+  | 'OTHER';
+
+export interface CreateFlowOptions {
+  name: string;
+  categories?: FlowCategory[];
+  endpointUri?: string;
+  cloneFlowId?: string;
+}
+
+export interface CreateFlowResponse {
+  id: string;
+}
+
+export interface FlowValidationError {
+  error: string;
+  error_type: string;
+  message: string;
+  line_start: number;
+  line_end: number;
+  column_start: number;
+  column_end: number;
+}
+
+export interface UpdateFlowJsonResponse {
+  success: boolean;
+  validation_errors: FlowValidationError[];
+}
+
+export interface PublishFlowResponse {
+  success: boolean;
+}
+
+export type FlowStatus = 'DRAFT' | 'PUBLISHED' | 'DEPRECATED' | 'BLOCKED' | 'THROTTLED';
+
+export interface FlowListItem {
+  id: string;
+  name: string;
+  status: FlowStatus;
+  categories: FlowCategory[];
+  validation_errors: FlowValidationError[];
+}
+
+export interface ListFlowsResponse {
+  data: FlowListItem[];
+  paging?: {
+    cursors: {
+      before: string;
+      after: string;
+    };
+  };
+}
+
+// Template management types
+export type TemplateCategory =
+  | 'AUTHENTICATION'
+  | 'MARKETING'
+  | 'UTILITY';
+
+export type TemplateStatus =
+  | 'APPROVED'
+  | 'IN_APPEAL'
+  | 'PENDING'
+  | 'REJECTED'
+  | 'PENDING_DELETION'
+  | 'DELETED'
+  | 'DISABLED'
+  | 'PAUSED'
+  | 'LIMIT_EXCEEDED';
+
+export interface TemplateComponentDefinition {
+  type: 'HEADER' | 'BODY' | 'FOOTER' | 'BUTTONS';
+  format?: 'TEXT' | 'IMAGE' | 'VIDEO' | 'DOCUMENT' | 'LOCATION';
+  text?: string;
+  buttons?: Array<{
+    type: string;
+    text?: string;
+    url?: string;
+    phone_number?: string;
+    [key: string]: unknown;
+  }>;
+  example?: {
+    header_text?: string[];
+    header_handle?: string[];
+    body_text?: string[][];
+  };
+  [key: string]: unknown;
+}
+
+export interface TemplateListItem {
+  id: string;
+  name: string;
+  language: string;
+  status: TemplateStatus;
+  category: TemplateCategory;
+  previous_category?: TemplateCategory;
+  components: TemplateComponentDefinition[];
+}
+
+export interface ListTemplatesResponse {
+  data: TemplateListItem[];
+  paging?: {
+    cursors: {
+      before: string;
+      after: string;
+    };
+  };
+}
+
+export interface CreateTemplateRequest {
+  name: string;
+  language: string;
+  category: TemplateCategory;
+  components: TemplateComponentDefinition[];
+  allow_category_change?: boolean;
+}
+
+export interface CreateTemplateResponse {
+  id: string;
+  status: TemplateStatus;
+  category: TemplateCategory;
+}
+
+export interface DeleteTemplateResponse {
+  success: boolean;
+}

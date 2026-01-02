@@ -23,21 +23,28 @@ A minimal, type-safe npm package for WhatsApp Business API webhook processing an
 waba-toolkit/
 ├── src/
 │   ├── index.ts              # Main exports
-│   ├── client.ts             # WABAClient class
-│   ├── media.ts              # Media download logic
+│   ├── client.ts             # WABAClient class (includes media download)
 │   ├── errors.ts             # Error classes
 │   ├── helpers.ts            # Utility helpers
 │   ├── verify.ts             # Webhook signature verification
+│   ├── api/
+│   │   ├── index.ts          # API client exports
+│   │   ├── client.ts         # WABAApiClient class
+│   │   └── types.ts          # API request/response types
 │   ├── webhooks/
 │   │   ├── index.ts          # Webhook exports
 │   │   ├── classify.ts       # Webhook type classification
 │   │   └── messages.ts       # Message type classification
-│   └── types/
-│       ├── index.ts          # Type exports
-│       ├── client.ts         # Client options types
-│       ├── media.ts          # Media response types
-│       ├── webhooks.ts       # Webhook payload types
-│       └── messages.ts       # Message type definitions
+│   ├── types/
+│   │   ├── index.ts          # Type exports
+│   │   ├── client.ts         # Client options types
+│   │   ├── media.ts          # Media response types
+│   │   ├── webhooks.ts       # Webhook payload types
+│   │   └── messages.ts       # Message type definitions
+│   └── cli/                  # CLI implementation
+│       ├── index.ts          # CLI entry point
+│       ├── config-manager.ts # Configuration management
+│       └── commands/         # CLI commands
 ├── package.json
 ├── tsconfig.json
 ├── tsup.config.ts
@@ -180,9 +187,12 @@ export type WebhookClassification =
   | { type: 'message'; payload: MessageWebhookValue }
   | { type: 'status'; payload: StatusWebhookValue }
   | { type: 'call'; payload: CallWebhookValue }
-  | { type: 'error'; payload: ErrorWebhookValue }
   | { type: 'unknown'; payload: unknown };
 ```
+
+> **Note:** Errors are not a separate webhook type. They appear as:
+> - `errors[]` array in message webhooks when `type: 'unknown'`
+> - `errors[]` array in status webhooks when `status: 'failed'`
 
 ### Message Types (Discriminated Union)
 
@@ -394,12 +404,16 @@ Classification is based on:
 
 ## Dependencies
 
-**Production**: None (uses native fetch)
+**Library**: None (uses native fetch)
+
+**CLI**:
+- `commander` ^12.x (command parsing)
+- `inquirer` ^9.x (interactive prompts)
 
 **Development**:
 - `typescript` ^5.x
 - `tsup` ^8.x (zero-config bundler, uses esbuild under the hood)
-- `vitest` for testing (optional)
+- `vitest` ^4.x for testing
 
 ---
 
@@ -408,7 +422,7 @@ Classification is based on:
 ```json
 {
   "name": "waba-toolkit",
-  "version": "0.1.0",
+  "version": "0.3.1",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
